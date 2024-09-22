@@ -8,7 +8,7 @@ pastikan docker pada komputer sudah berjalan
 
 jalankan perintah berikut untuk menjalankan aplikasi
 
-- docker-compose -up
+- docker-compose up
 
 Contoh Request:
 
