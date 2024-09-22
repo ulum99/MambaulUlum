@@ -1,0 +1,58 @@
+services:
+  db:
+    image: mariadb:10.6
+    container_name: db_container
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ulum99
+      MYSQL_DATABASE: ulum_db
+      MYSQL_USER: app
+      MYSQL_PASSWORD: ulum99
+    networks:
+      app-network:
+         ipv4_address: 172.16.1.10
+    ports:
+      - "5001:3306"
+    volumes:
+      - mariadb:/var/lib/mysql
+  
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest   
+    container_name: phpmyadmin            
+    environment:
+      PMA_HOST: db_container               
+      PMA_USER: root                     
+      PMA_PASSWORD: ulum99         
+      PMA_PORT: 3306
+    ports:
+      - "8080:80"                        
+    networks:
+      app-network:
+         ipv4_address: 172.16.1.11 
+
+  node:
+    build: 
+      context: .
+      dockerfile: ./app/Dockerfile
+    container_name: node_container
+    volumes:
+      - type: bind
+        source: ./app
+        target: /usr/src/app
+    ports:
+      - "5002:5000"
+    depends_on:
+      - db
+    networks:
+      app-network:
+         ipv4_address: 172.16.1.12
+
+networks:
+  app-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.16.1.0/24
+
+volumes:
+  mariadb:
