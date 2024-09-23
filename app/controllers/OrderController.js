@@ -75,6 +75,15 @@ export const createOrder = async (req, res) => {
         },
       }
     );
+    for (let key in req.body.products) {
+      const qty = req.body.products[key].quantity;
+      const prdID = req.body.products[key].id;
+      const query = "UPDATE products SET stock = stock - :x  WHERE id = :id;";
+      const cekStock = await db.query(query, {
+        replacements: { x: qty, id: prdID }, // Use parameterized queries to prevent SQL injection
+        type: db.QueryTypes.UPDATE, // Specify the type of query (SELECT, INSERT, etc.)
+      });
+    }
     res.status(200).json({
       message: "Order created",
       data: { id: respOrder.id, products: respOrderDetail },
