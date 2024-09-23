@@ -45,7 +45,7 @@ export const createProduct = async (req, res) => {
     });
     res.status(201).json({
       message: "Product created successfully",
-      data: response,
+      data: { response },
     });
   } catch (error) {
     res
@@ -61,13 +61,20 @@ export const updateProduct = async (req, res) => {
         id: req.params.id,
       },
     });
-    res.status(200).json({
-      message: "Product updated successfully",
-      data: response,
-    });
+    if (response >= 1) {
+      res.status(200).json({
+        message: "Product updated successfully",
+        data: await Product.findOne({
+          where: {
+            id: req.params.id,
+          },
+        }),
+      });
+    } else {
+      throw error;
+    }
   } catch (error) {
-    res.status(404).json({ message: error.message });
-    console.log(error.message);
+    res.status(404).json({ message: "Product not found" });
   }
 };
 

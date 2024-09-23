@@ -7,28 +7,19 @@ const { DataTypes } = Sequelize;
 const Order = db.define(
   "order",
   {
-    id: {
-      type: DataTypes.INTEGER,
+    orderCode: {
+      type: Sequelize.UUID,
+      defaultValue: Sequelize.UUIDV4,
       allowNull: false,
-      autoIncrement: false,
-      primaryKey: true,
-      validate: {
-        notEmpty: true,
-      },
-    },
-    quantity: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      validate: {
-        notEmpty: true,
-      },
     },
   },
   {
     freezeTableName: true,
   }
 );
-Order.removeAttribute("id");
-Product.hasMany(Order);
-Order.belongsTo(Product, { foreignKey: "id_product" });
+
 export default Order;
+(async () => {
+  await db.sync();
+  console.log("Table Order Created");
+})();

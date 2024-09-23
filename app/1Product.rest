@@ -8,17 +8,17 @@ POST http://localhost:5002/api/products
 Content-Type: application/json
 
 {
-  "name": "DDDD",
-  "price": 12000000,
+  "name": "APPLE",
+  "price": 13000,
   "stock": 15
 }
 
 ###
-PUT  http://localhost:5002/api/products/1
+PUT  http://localhost:5002/api/products/4
 Content-Type: application/json
 
 {
-    "name":"",
+    "name":"gdfg",
     "price": 30000,
     "stock":10
 }
