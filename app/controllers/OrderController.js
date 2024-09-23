@@ -1,4 +1,7 @@
+import db from "../config/Database.js";
 import Order from "../models/OrderModels.js";
+import OrderDetail from "../models/OrderDetailModels.js";
+import TempOrder from "../models/TempOrdermodels.js";
 
 export const getOrders = async (req, res) => {
   try {
@@ -37,22 +40,51 @@ export const getOrderById = async (req, res) => {
 };
 
 export const createOrder = async (req, res) => {
-  const { products } = req.body;
-  console.log(products);
+  console.log("DATA ASLI: ", req.body.products);
+  const stk = 0;
   try {
-    //const response = await Order.bulkCreate([req.body]);
-    const response = await Order.bulkCreate({
-      productsId: products.id,
-      quatity: products.quatity,
-    });
-    console.log(response);
+    /// ================ Cek Qty ============== ///
+    for (let key in req.body.products) {
+      const qty = req.body.products[key].quantity;
+      const prdID = req.body.products[key].id;
+
+      const query =
+        "SELECT EXISTS (SELECT 1 FROM products WHERE stock >= :x and id = :id) AS stock";
+      const cekStock = await db.query(query, {
+        replacements: { x: qty, id: prdID }, // Use parameterized queries to prevent SQL injection
+        type: db.QueryTypes.SELECT, // Specify the type of query (SELECT, INSERT, etc.)
+      });
+      console.log("HASIL: ", cekStock[0].stock);
+      if (cekStock[0].stock < 1) {
+        throw error;
+      }
+      console.log("Pengecekan product id =", prdID);
+    }
+    ////
+    const respOrder = await Order.create();
+    //console.log("Result Order: ", respOrder.id);
+    ////
+    const respOrderDetail = await OrderDetail.bulkCreate(req.body.products);
+    //console.log("Result Order Detail: ", respOrderDetail);
+    ////
+    const response = await OrderDetail.update(
+      { orderId: respOrder.id },
+      {
+        where: {
+          orderId: null,
+        },
+      }
+    );
     res.status(200).json({
       message: "Order created",
-      data: response,
+      data: { id: respOrder.id, products: respOrderDetail },
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
-    console.log(error.message);
+    if (stk < 1) {
+      res.status(404).json({ message: "Product out of stock" });
+    } else {
+      res.status(400).json({ message: "Product not found" });
+    }
   }
 };
 

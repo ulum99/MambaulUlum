@@ -8,11 +8,11 @@ Content-Type: application/json
   "products": [
     {
       "id": 1,
-      "quantity": 1
+      "quantity": 15
     },
     {
       "id": 2,
-      "quantity": 5
+      "quantity": 20
     }
   ]
 }

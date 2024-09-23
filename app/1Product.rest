@@ -8,9 +8,9 @@ POST http://localhost:5002/api/products
 Content-Type: application/json
 
 {
-  "name": "APPLE",
-  "price": 13000,
-  "stock": 15
+  "name": "ZZZZ",
+  "price": 20000,
+  "stock": 100
 }
 
 ###
